@@ -1,4 +1,4 @@
-﻿Shader "Custom/PointViewer"
+﻿Shader "PointCluster/PointViewerBillboard"
 {
     Properties
     {

@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -8,6 +7,7 @@ namespace PointCluster
 {
     public class PointViewer : MonoBehaviour
     {
+        public bool enable = false;
         public Material material;
         public bool gizmoEnable = true;
         public float gizmoCubeSize = 1f;
@@ -15,22 +15,29 @@ namespace PointCluster
         protected Mesh mesh;
 
 
-        public void SetPoint(Vector3[] points)
+        public void SetPoint(List<Point> points)
         {
+            if (mesh != null) Destroy(mesh);
+
             mesh = new Mesh
             {
                 indexFormat = IndexFormat.UInt32,
-                vertices = points
+                vertices = points.Select(p => p.pos).ToArray(),
+                normals = points.Select(p => p.rot * Vector3.forward).ToArray()
             };
 
-            mesh.SetIndices(Enumerable.Range(0, points.Length).ToArray(), MeshTopology.Points, 0);
+            mesh.SetIndices(Enumerable.Range(0, points.Count).ToArray(), MeshTopology.Points, 0);
+            mesh.RecalculateBounds();
         }
 
 
         private void OnRenderObject()
         {
-            material.SetPass(0);
-            Graphics.DrawMeshNow(mesh, transform.localToWorldMatrix);
+            if (enable && ((Camera.current.cullingMask & (1<<gameObject.layer)) != 0))
+            {
+                material.SetPass(0);
+                Graphics.DrawMeshNow(mesh, transform.localToWorldMatrix);
+            }
         }
 
         private void OnDrawGizmosSelected()

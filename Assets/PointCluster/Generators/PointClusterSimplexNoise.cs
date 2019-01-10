@@ -9,7 +9,7 @@ namespace PointCluster
     /// <summary>
     /// Based on @nobnak's SuperCluster package
     /// </summary>    
-    public class PointClusterSimplexNoise : IPointClusterGenerator<Vector3>
+    public class PointClusterSimplexNoise : IPointClusterGenerator<Point>
     {
         protected struct DVec3
         {
@@ -37,11 +37,10 @@ namespace PointCluster
         public class NoiseParam
         {
             public float sd = 1f;
-            public float noiseSize = 1f;
-            public int walkMax = 10;
+            public float noiseSize = 10f;
+            public int walkMax = 20;
         }
 
-        //public const int WarmingSkip = 1000;
         public int numPerThread = 100000;
         public double blackLevel = 1e-6;
 
@@ -54,37 +53,25 @@ namespace PointCluster
         Vector3 _size;
         double _invNoiseSize;
 
-        public virtual List<Vector3> Generate(int num, Bounds bounds)
+        public virtual List<Point> Generate(int num, Bounds bounds)
         {
             _size = bounds.size;
             _min = bounds.min;
             //_max = bounds.max;
             _invNoiseSize = 1.0 / param.noiseSize;
 
-#if true
             return MCMC(num, bounds).ToList();
-#else
-            var tasks = new List<Task<List<Vector3>>>();
-            for (var i = num; i > 0; i-=numPerThread)
-            {
-                var n = Mathf.Min(numPerThread, i);
-                tasks.Add(Task.Run(() => MCMC(n, bounds).ToList()));
-            }
 
-            var t = Task.WhenAll(tasks);
-            t.Wait();
-            return t.Result.SelectMany(r => r).ToList();
-#endif
         }
 
-        protected IEnumerable<Vector3> MCMC(int num, Bounds bounds)
+        protected IEnumerable<Point> MCMC(int num, Bounds bounds)
         {
             (double current, DVec3 pos) = Init(bounds);
 
             for (var i = 0; i < num; ++i)
             {
                 Walk(ref current, ref pos);
-                yield return pos;
+                yield return new Point() { pos = pos, rot = Quaternion.identity };
             }
         }
 

@@ -142,6 +142,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 502f4ec9d48c694429807bf263daeb3d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  generateAtStart: 1
   num: 100000
   bounds:
     m_Center: {x: 0, y: 0, z: 0}
@@ -186,6 +187,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f957ec8c1b5866f4eade78f6511a340c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enable: 1
   material: {fileID: 2100000, guid: bc6eea4fa1ab17a48926d3ee27b5cb1a, type: 2}
   gizmoEnable: 0
   gizmoCubeSize: 1

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace PointCluster.Example
@@ -13,10 +12,11 @@ namespace PointCluster.Example
             CurlNoise
         }
 
+        public bool generateAtStart;
         public int num = 100000;
-        public Bounds bounds = new Bounds(Vector3.zero, Vector3.one * 100f);
+        public Bounds bounds = new Bounds(Vector3.zero, Vector3.one * 200f);
 
-        public Cluster cluster;
+        public Cluster cluster = Cluster.CurlNoise;
         public PointClusterSimplexNoise.NoiseParam noiseParam;
         public PointClusterCurlNoise.CurlParam curlParam;
 
@@ -26,11 +26,11 @@ namespace PointCluster.Example
 
         public PointViewer viewer;
 
-        Dictionary<Cluster, IPointClusterGenerator<Vector3>> clusters;
+        Dictionary<Cluster, IPointClusterGenerator<Point>> clusters;
 
         private void Awake()
         {
-            clusters = new Dictionary<Cluster, IPointClusterGenerator<Vector3>>()
+            clusters = new Dictionary<Cluster, IPointClusterGenerator<Point>>()
             {
                 [Cluster.Uniform] = uniform,
                 [Cluster.Noise] = noise,
@@ -40,19 +40,22 @@ namespace PointCluster.Example
 
         private void Start()
         {
-            if (viewer == null) viewer = GetComponent<PointViewer>();
-            Generate();
+            if (generateAtStart) Generate();
         }
 
         [ContextMenu("Generate")]
-        public void Generate()
+        public List<Point> Generate()
         {
             noise.param = noiseParam;
             curlNoise.param = noiseParam;
             curlNoise.curlParam = curlParam;
 
             var points = clusters[cluster].Generate(num, bounds);
-            viewer.SetPoint(points.ToArray());
+
+            if (viewer == null) viewer = GetComponent<PointViewer>();
+            viewer?.SetPoint(points);
+
+            return points;
         }
 
         private void OnDrawGizmosSelected()

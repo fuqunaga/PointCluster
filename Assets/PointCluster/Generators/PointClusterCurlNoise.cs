@@ -13,14 +13,14 @@ namespace PointCluster
         [System.Serializable]
         public class CurlParam
         {
-            public float noiseScale = 1f;
+            public float noiseScale = 50f;
             public float speedScale = 1f;
-            public Vector3 offset0 = new Vector3(100f, 0f, -100f);
-            public Vector3 offset1 = new Vector3(-100f, 100f, 0f);
-            public Vector3 offset2 = new Vector3(0f, -100f, 100f);
+            public Vector3 offset0 = new Vector3(1f, 0f, -1f);
+            public Vector3 offset1 = new Vector3(-1f, 1f, 0f);
+            public Vector3 offset2 = new Vector3(0f, -1f, 1f);
 
             public float duration = 10f;
-            public float dt = 1f;
+            public float dt = 0.5f;
         }
 
         public const double DELTA = 1e-3;
@@ -31,7 +31,7 @@ namespace PointCluster
         double _invTwoDelta;
 
 
-        public override List<Vector3> Generate(int num, Bounds bounds)
+        public override List<Point> Generate(int num, Bounds bounds)
         {
             Init();
 
@@ -42,7 +42,13 @@ namespace PointCluster
             {
                 for (var idx = 0; idx < points.Count; ++idx)
                 {
-                    points[idx] += Velosity(points[idx]) * dt;
+                    var point = points[idx];
+                    var velocity = Velosity(point.pos);
+
+                    point.pos += velocity * dt;
+                    point.rot = Quaternion.FromToRotation(Vector3.forward, velocity);
+
+                    points[idx] = point;
                 }
             }
 

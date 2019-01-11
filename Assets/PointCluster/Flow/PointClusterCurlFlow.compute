@@ -1,0 +1,51 @@
+﻿#include "Noise.cginc"
+#include "Quaternion.cginc"
+
+#pragma kernel Flow THREAD_NUM_X=256
+
+struct Point{
+    float3 pos;
+    float4 rot;
+};
+
+RWStructuredBuffer<Point> _PointBuffer;
+
+float _DT; 
+float _NoiseScaleInv;
+float _CurlDelta;
+float _Speed;
+
+
+//================================================================================
+// Flow
+//================================================================================
+float3 Velocity(float3 pos)
+{
+    pos *= _NoiseScaleInv;
+	return float3(
+		curlX(pos, _CurlDelta),
+		curlY(pos, _CurlDelta),
+		curlZ(pos, _CurlDelta)
+		);
+}
+
+[numthreads(THREAD_NUM_X,1,1)]
+void Flow (uint3 DTid : SV_DispatchThreadID)
+{
+    uint id = DTid.x;
+
+    uint num, stride;
+    _PointBuffer.GetDimensions(num, stride);
+
+    if ( id >= num) return;
+
+    Point pointData = _PointBuffer[id];
+	float3 pos = pointData.pos;
+
+    float3 velocity = Velocity(pos);
+    pos += velocity * _Speed * _DT;
+
+	pointData.pos = pos;
+	pointData.rot = fromToRotation(float3(0,0,1), velocity);
+    _PointBuffer[id] = pointData;
+}

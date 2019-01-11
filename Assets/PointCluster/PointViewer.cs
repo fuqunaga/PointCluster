@@ -14,6 +14,8 @@ namespace PointCluster
 
         protected Mesh mesh;
 
+        protected ComputeBuffer buffer;
+
 
         public void SetPoint(List<Point> points)
         {
@@ -28,6 +30,25 @@ namespace PointCluster
 
             mesh.SetIndices(Enumerable.Range(0, points.Count).ToArray(), MeshTopology.Points, 0);
             mesh.RecalculateBounds();
+        }
+
+        public void SetBuffer(ComputeBuffer buffer)
+        {
+            this.buffer = buffer;
+        }
+
+
+        Point[] tmpPoints;
+
+        private void LateUpdate()
+        {
+            if ( buffer != null)
+            {
+                if (tmpPoints == null) tmpPoints = new Point[buffer.count];
+
+                buffer.GetData(tmpPoints);
+                SetPoint(tmpPoints.ToList());
+            }
         }
 
 

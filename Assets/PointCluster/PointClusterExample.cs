@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace PointCluster.Example
@@ -24,6 +25,8 @@ namespace PointCluster.Example
         PointClusterSimplexNoise noise = new PointClusterSimplexNoise();
         PointClusterCurlNoise curlNoise = new PointClusterCurlNoise();
 
+        PointClusterCurlFlow curlFlow;
+
         public PointViewer viewer;
 
         Dictionary<Cluster, IPointClusterGenerator<Point>> clusters;
@@ -40,8 +43,13 @@ namespace PointCluster.Example
 
         private void Start()
         {
-            if (generateAtStart) Generate();
+            if (curlFlow == null) curlFlow = GetComponent<PointClusterCurlFlow>();
+            if (generateAtStart)
+            {
+                Generate();
+            }
         }
+
 
         [ContextMenu("Generate")]
         public List<Point> Generate()
@@ -53,7 +61,15 @@ namespace PointCluster.Example
             var points = clusters[cluster].Generate(num, bounds);
 
             if (viewer == null) viewer = GetComponent<PointViewer>();
-            viewer?.SetPoint(points);
+            if (curlFlow != null)
+            {
+                curlFlow.Init(points);
+                viewer?.SetBuffer(curlFlow.pointBuffer);
+            }
+            else
+            {
+                viewer?.SetPoint(points);
+            }
 
             return points;
         }

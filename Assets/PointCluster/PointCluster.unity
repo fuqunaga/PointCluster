@@ -123,6 +123,7 @@ GameObject:
   - component: {fileID: 137951780}
   - component: {fileID: 137951779}
   - component: {fileID: 137951781}
+  - component: {fileID: 137951782}
   m_Layer: 0
   m_Name: PointCluster
   m_TagString: Untagged
@@ -143,7 +144,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   generateAtStart: 1
-  num: 100000
+  num: 10000
   bounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 100, y: 100, z: 100}
@@ -191,6 +192,22 @@ MonoBehaviour:
   material: {fileID: 2100000, guid: bc6eea4fa1ab17a48926d3ee27b5cb1a, type: 2}
   gizmoEnable: 0
   gizmoCubeSize: 1
+--- !u!114 &137951782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 137951778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fffd0bcc8f94fcb4587441619f333ec1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cs: {fileID: 7200000, guid: 0cbcf0941a19f0c49a57fcb109c9ad02, type: 3}
+  noiseScale: 50
+  curlDelta: 0.1
+  speed: 10
 --- !u!1 &170076733
 GameObject:
   m_ObjectHideFlags: 0
